@@ -46,15 +46,15 @@ public class ServerConnection extends WebSocketServer {
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         //Create new Thread that handles all the incoming message
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
         ClientHandler clientHandler = new ClientHandler(webSocket, clientHandshake.getResourceDescriptor(), listener);
         clients.add(clientHandler);
         new Thread(clientHandler).start();
-        System.out.println(clients.size());
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " Disconnected");
+
     }
 
     @Override
