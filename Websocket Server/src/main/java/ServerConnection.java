@@ -1,5 +1,4 @@
 import org.java_websocket.WebSocket;
-import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
@@ -37,8 +36,8 @@ public class ServerConnection extends WebSocketServer {
             }
 
             @Override
-            public void sendMessageTo() {
-
+            public boolean sendMessageTo(String json) {
+                return false;
             }
         };
     }
@@ -56,12 +55,6 @@ public class ServerConnection extends WebSocketServer {
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
 
     }
-
-    @Override
-    public void onMessage(WebSocket webSocket, ByteBuffer byteBuffer) {
-        byteBuffer.array();
-    }
-
     @Override
     public void onMessage(WebSocket webSocket, String s) {
         broadcast(s);

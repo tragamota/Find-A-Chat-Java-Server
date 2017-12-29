@@ -1,3 +1,4 @@
+import Message.MessageWrapper;
 import org.java_websocket.WebSocket;
 
 import java.util.LinkedList;
@@ -7,9 +8,10 @@ import java.util.TimerTask;
 
 public class ClientHandler implements Runnable {
     private WebSocket clientSocket;
-    private Queue<byte[]> messageOrder;
+    private Queue<String> messageOrder;
     private String idToken;
     private Timer updateTimer;
+
     private ClientListener listener;
     private DataBaseConnector dbConnector;
 
@@ -33,7 +35,7 @@ public class ClientHandler implements Runnable {
         cleanUp();
     }
 
-    public void sendMessage(byte[] serializedMessage) {
+    public void sendMessage(String serializedMessage) {
         if(clientSocket.isOpen()) {
             clientSocket.send(serializedMessage);
         }
@@ -50,10 +52,9 @@ public class ClientHandler implements Runnable {
                 }
             }, 0, 20000);
         }
-        //see if there are new unread messages.
     }
 
-    private void processInComingMessage(byte[] deserializeMessage) {
+    private void processInComingMessage(String json) {
         //protocolbuffer
     }
 
@@ -71,8 +72,12 @@ public class ClientHandler implements Runnable {
         }
         else {
             boolean tokenExist = dbConnector.checkIdToken(idToken.replaceFirst("/", ""));
-            if(tokenExist) {
+            if(!tokenExist) {
                 clientSocket.close();
+            }
+            else {
+                idToken = idToken.replaceFirst("/", "");
+                clientSocket.send(MessageWrapper.wrapUnreadMessage(dbConnector.getAllUnreadMessages(idToken)));
             }
         }
     }
