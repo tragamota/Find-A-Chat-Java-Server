@@ -1,14 +1,12 @@
+import Message.Location;
 import Message.MessageWrapper;
 import org.java_websocket.WebSocket;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class ClientHandler implements Runnable {
     private WebSocket clientSocket;
-    private Queue<String> messageOrder;
+    private Queue<Map<String, Object>> messageOrder;
     private String idToken;
     private Timer updateTimer;
 
@@ -30,7 +28,13 @@ public class ClientHandler implements Runnable {
             if(!messageOrder.isEmpty()) {
                 processInComingMessage(messageOrder.poll());
             }
-            Thread.yield();
+
+            try {
+                Thread.yield();
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         cleanUp();
     }
@@ -41,6 +45,14 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void addMessageToStack(Map<String, Object> json) {
+        messageOrder.add(json);
+    }
+
     private void initialize() {
         dbConnector = new DataBaseConnector();
         validAuth();
@@ -48,14 +60,20 @@ public class ClientHandler implements Runnable {
             updateTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    //send GPS request
+                    sendMessage(MessageWrapper.wrapLocationRequest());
                 }
             }, 0, 20000);
         }
     }
 
-    private void processInComingMessage(String json) {
-        //protocolbuffer
+    private void processInComingMessage(Map<String, Object> json) {
+        String command = (String) json.get("command");
+        switch(command) {
+            case "gps":
+                dbConnector.updateGPS(idToken, json.get("location"));
+                break;
+        }
+        System.out.println(json.keySet());
     }
 
     private void cleanUp() {
@@ -81,5 +99,4 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
 }

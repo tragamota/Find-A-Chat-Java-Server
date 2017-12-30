@@ -1,3 +1,4 @@
+import Message.MessageWrapper;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
@@ -11,9 +12,11 @@ import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.security.KeyStore;
+import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ServerConnection extends WebSocketServer {
     private List<ClientHandler> clients;
@@ -55,9 +58,21 @@ public class ServerConnection extends WebSocketServer {
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
 
     }
+
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        broadcast(s);
+        Map<String, Object> json = MessageWrapper.unwrapMessage(s);
+        String idToken = (String) json.get("idToken");
+        json.remove("idToken");
+
+        Iterator it = clients.iterator();
+        while(it.hasNext()) {
+            ClientHandler client = (ClientHandler) it.next();
+            if(client.getIdToken().equals(idToken)) {
+                client.addMessageToStack(json);
+                return;
+            }
+        }
     }
 
     @Override

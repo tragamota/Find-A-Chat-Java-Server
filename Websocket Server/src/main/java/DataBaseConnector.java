@@ -1,4 +1,4 @@
-import Message.Message;
+import Message.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -64,6 +64,10 @@ public class DataBaseConnector {
             System.out.println(e.getSQLState());
         }
         return allMessages;
+    }
+
+    public void updateGPS(String idToken, Location location) {
+
     }
 
     private ResultSet sendQuery(String query) {
