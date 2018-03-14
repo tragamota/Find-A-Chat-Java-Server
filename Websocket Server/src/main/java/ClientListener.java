@@ -1,6 +1,4 @@
-
-
 public interface ClientListener {
     void clientIsDone(ClientHandler clientHandler);
-    boolean sendMessageTo(String jsonMessage);
+    boolean sendMessageTo(String jsonMessage, String toId);
 }

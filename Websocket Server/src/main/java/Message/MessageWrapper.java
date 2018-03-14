@@ -1,7 +1,9 @@
 package Message;
 
 import com.owlike.genson.Genson;
+import com.owlike.genson.annotation.JsonConverter;
 
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,5 +46,12 @@ public class MessageWrapper {
 
     public static HashMap<String, Object> unwrapMessage(String json) {
         return jsonConverter.deserialize(json, HashMap.class);
+    }
+
+    public static Location deserializeLocation(HashMap json) {
+        if(json != null) {
+            return new Location((double) json.get("langitude"), (double) json.get("longitude"));
+        }
+        return null;
     }
 }

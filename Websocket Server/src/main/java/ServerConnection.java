@@ -13,10 +13,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.sql.ClientInfoStatus;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ServerConnection extends WebSocketServer {
     private List<ClientHandler> clients;
@@ -39,7 +36,16 @@ public class ServerConnection extends WebSocketServer {
             }
 
             @Override
-            public boolean sendMessageTo(String json) {
+            public boolean sendMessageTo(String json, String toId) {
+                Iterator it = clients.iterator();
+
+                while(it.hasNext()) {
+                    ClientHandler client = (ClientHandler) it.next();
+                    if(client.getIdToken().equals(toId)) {
+                        client.sendMessage(json);
+                        return true;
+                    }
+                }
                 return false;
             }
         };
@@ -48,7 +54,7 @@ public class ServerConnection extends WebSocketServer {
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         //Create new Thread that handles all the incoming message
-        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + "   " + clients.size());
         ClientHandler clientHandler = new ClientHandler(webSocket, clientHandshake.getResourceDescriptor(), listener);
         clients.add(clientHandler);
         new Thread(clientHandler).start();
@@ -61,15 +67,15 @@ public class ServerConnection extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
+        System.out.println(s);
         Map<String, Object> json = MessageWrapper.unwrapMessage(s);
         String idToken = (String) json.get("idToken");
-        json.remove("idToken");
 
         Iterator it = clients.iterator();
         while(it.hasNext()) {
             ClientHandler client = (ClientHandler) it.next();
             if(client.getIdToken().equals(idToken)) {
-                client.addMessageToStack(json);
+                client.addMessageToStack((HashMap) json.get("content"));
                 return;
             }
         }

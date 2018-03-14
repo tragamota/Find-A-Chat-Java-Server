@@ -67,7 +67,64 @@ public class DataBaseConnector {
     }
 
     public void updateGPS(String idToken, Location location) {
+        if(location != null) {
+            if (checkIfLocationIsAlreadySet(idToken)) {
+                String query = "UPDATE location SET longitude = " + location.getLongitude() + " , langitude = " + location.getLangitude() + " WHERE IdToken = " + idToken;
+                sendQuery(query);
+            } else {
+                String query = "Insert into location Value (" + idToken + ", " + location.getLongitude() + ", " + location.getLangitude() + ")";
+                sendQuery(query);
+            }
+        }
+    }
 
+    public List<UserInfo> getAllLocations() {
+        List<UserInfo> locations = new ArrayList<>();
+
+        String query = "Select * from location join userinfo";
+
+        ResultSet s = sendQuery(query);
+        try {
+            while(s.next()) {
+                String idToken = s.getString("IdToken");
+                String nickname = s.getString("NickName");
+                String firstName = s.getString("FirstName");
+                String lastName = s.getString("LastName");
+                String imagePath = s.getString("ImagePath");
+                double langitude = s.getDouble("Langitude");
+                double longitude = s.getDouble("longitude");
+
+                locations.add(new UserInfo(idToken, nickname, firstName, lastName, imagePath, longitude, langitude));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return locations;
+    }
+
+    public void deleteLocation(String idToken) {
+        String query = "DELETE from location WHERE idToken = " + idToken;
+
+        sendQuery(query);
+    }
+
+    private boolean checkIfLocationIsAlreadySet(String idToken) {
+        String query = "SELECT count(*) from location Where IdToken = " + idToken;
+
+        ResultSet resultSet = sendQuery(query);
+        try {
+            resultSet.next();
+            int exist = resultSet.getInt("count(*)");
+            if(exist > 0) {
+                return true;
+            }
+            resultSet.close();
+        }
+        catch (SQLException e) {
+            e.getSQLState();
+        }
+        return false;
     }
 
     private ResultSet sendQuery(String query) {

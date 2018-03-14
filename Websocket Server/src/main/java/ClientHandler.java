@@ -67,17 +67,25 @@ public class ClientHandler implements Runnable {
     }
 
     private void processInComingMessage(Map<String, Object> json) {
+        System.out.println(json);
         String command = (String) json.get("command");
         switch(command) {
             case "gps":
-                dbConnector.updateGPS(idToken, json.get("location"));
+                dbConnector.updateGPS(idToken, MessageWrapper.deserializeLocation((HashMap) json.get("location")));
+                sendMessage(MessageWrapper.wrapLocations(dbConnector.getAllLocations()));
+                break;
+            case "message":
+
+                break;
+            case "chat":
+
                 break;
         }
-        System.out.println(json.keySet());
     }
 
     private void cleanUp() {
         //remove location from database
+        dbConnector.deleteLocation(idToken);
         dbConnector.closeConnection();
         updateTimer.cancel();
         updateTimer.purge();
