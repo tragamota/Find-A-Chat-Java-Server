@@ -1,10 +1,16 @@
+import Connection.DataBaseConnector;
+import Connection.ServerConnection;
+import Message.LoginInfo;
+import Message.Message;
 import Message.UserInfo;
-import com.owlike.genson.Genson;
 
-import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Main {
     private ServerConnection socket;
@@ -13,6 +19,7 @@ public class Main {
         socket = new ServerConnection(443);
         socket.setConnectionLostTimeout(20);
         socket.start();
+        DataBaseConnector db = new DataBaseConnector();
     }
 
     public static void main(String[] args) {

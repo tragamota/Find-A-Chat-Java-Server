@@ -1,5 +1,10 @@
 package Message;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,11 +24,17 @@ public class UserInfo {
         this.profileImage = loadImage(imagePath);
     }
 
+    public UserInfo(String idToken, String nickName, String firstName, String lastName) {
+        this.idToken = idToken;
+        this.nickName = nickName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     private String loadImage(String imagePath) {
         String loadedImage = null;
         if(imagePath != null) {
             try {
-                System.out.println(Paths.get("").toAbsolutePath());
                 byte[] imageInBytes = Files.readAllBytes(Paths.get(Paths.get("").toAbsolutePath() + "\\profileImage\\" + imagePath));
                 loadedImage = Base64.getEncoder().encodeToString(imageInBytes);
                 System.out.println(loadedImage);
@@ -33,6 +44,21 @@ public class UserInfo {
             }
         }
         return loadedImage;
+    }
+
+    public static BufferedImage decodeImage(String base64Image) {
+        BufferedImage decodedImage = null;
+        byte[] imageInBytes;
+
+        imageInBytes = Base64.getDecoder().decode(base64Image);
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageInBytes);
+            decodedImage = ImageIO.read(bis);
+            bis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return decodedImage;
     }
 
     public String getIdToken() {

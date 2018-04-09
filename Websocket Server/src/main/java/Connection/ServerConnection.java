@@ -1,3 +1,7 @@
+package Connection;
+
+import Client.ClientHandler;
+import Client.ClientListener;
 import Message.MessageWrapper;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -10,9 +14,7 @@ import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.security.KeyStore;
-import java.sql.ClientInfoStatus;
 import java.util.*;
 
 public class ServerConnection extends WebSocketServer {
@@ -54,7 +56,7 @@ public class ServerConnection extends WebSocketServer {
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         //Create new Thread that handles all the incoming message
-        System.out.println(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + "   " + clients.size());
+        System.out.println(webSocket.getRemoteSocketAddress().getHostString() + "   " + clients.size());
         ClientHandler clientHandler = new ClientHandler(webSocket, clientHandshake.getResourceDescriptor(), listener);
         clients.add(clientHandler);
         new Thread(clientHandler).start();
@@ -62,7 +64,7 @@ public class ServerConnection extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-
+        System.out.println("User disconnected from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
     @Override
@@ -101,7 +103,7 @@ public class ServerConnection extends WebSocketServer {
 
         try {
             KeyStore ks = KeyStore.getInstance(storeType);
-            File file = new File(getClass().getResource(keyStore).toURI());
+            File file = new File(getClass().getClassLoader().getResource(keyStore).toURI());
             ks.load(new FileInputStream(file), storePass.toCharArray());
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("sunX509");
