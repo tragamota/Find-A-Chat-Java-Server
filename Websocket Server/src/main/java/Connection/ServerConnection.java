@@ -103,8 +103,7 @@ public class ServerConnection extends WebSocketServer {
 
         try {
             KeyStore ks = KeyStore.getInstance(storeType);
-            File file = new File(getClass().getClassLoader().getResource(keyStore).toURI());
-            ks.load(new FileInputStream(file), storePass.toCharArray());
+            ks.load(getClass().getClassLoader().getResourceAsStream(keyStore), storePass.toCharArray());
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("sunX509");
             kmf.init(ks, keyPass.toCharArray());
