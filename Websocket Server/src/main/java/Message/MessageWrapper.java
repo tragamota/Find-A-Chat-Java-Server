@@ -13,7 +13,7 @@ public class MessageWrapper {
     private static final Genson jsonConverter = new Genson();
 
     public static String wrapUnreadMessage(List<Message> messages) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "unread messages");
             if(messages.isEmpty()) {
                 put("state", "no Messages");
@@ -26,7 +26,7 @@ public class MessageWrapper {
     }
 
     public static String wrapLocations(List<UserInfo> info) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "locations");
             if(info.isEmpty()) {
                 put("state", "no users");
@@ -39,14 +39,14 @@ public class MessageWrapper {
     }
 
     public static String wrapLocationRequest() {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "location request");
         }};
         return jsonConverter.serialize(json);
     }
 
     public static String wrapLoginInfo(String userHash) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "loginInfo");
             if(userHash != null) {
                 put("userhash", userHash);
@@ -59,7 +59,7 @@ public class MessageWrapper {
     }
 
     public static String wrapNewChat(String chatId, String fromId, String toId) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "new Chat");
             put("chatID", chatId);
             put("fromID", fromId);
@@ -69,7 +69,7 @@ public class MessageWrapper {
     }
 
     public static String wrapTempIdToken(String tempHash) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "temp idToken");
             put("tempHash", tempHash);
         }};
@@ -77,7 +77,7 @@ public class MessageWrapper {
     }
 
     public static String wrapNewMessage(Message message) {
-        Map<String, Object> json = new HashMap<>() {{
+        Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "newMessage");
             put("message", message);
         }};
@@ -90,7 +90,7 @@ public class MessageWrapper {
 
     public static Location deserializeLocation(HashMap json) {
         if(json != null) {
-            return new Location((double) json.get("langitude"), (double) json.get("longitude"));
+            return new Location((double) json.get("latitude"), (double) json.get("longitude"));
         }
         return null;
     }
