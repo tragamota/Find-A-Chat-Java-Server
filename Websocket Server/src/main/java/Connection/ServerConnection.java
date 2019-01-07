@@ -56,7 +56,7 @@ public class ServerConnection extends WebSocketServer {
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         //Create new Thread that handles all the incoming message
-        System.out.println(webSocket.getRemoteSocketAddress().getHostString() + "   " + clients.size());
+        System.out.println(webSocket.getRemoteSocketAddress().getHostString() + "   " + (clients.size() + 1));
         ClientHandler clientHandler = new ClientHandler(webSocket, clientHandshake.getResourceDescriptor(), listener);
         clients.add(clientHandler);
         new Thread(clientHandler).start();
@@ -64,12 +64,13 @@ public class ServerConnection extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println("User disconnected from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        if(webSocket != null) {
+            System.out.println("User disconnected from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+        }
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        System.out.println(s);
         Map<String, Object> json = MessageWrapper.unwrapMessage(s);
         String idToken = (String) json.get("idToken");
 

@@ -108,9 +108,9 @@ public class DataBaseConnector {
         String query;
         if(location != null) {
             if (checkIfLocationIsAlreadySet(idToken)) {
-                query = "UPDATE location SET longitude = " + location.getLongitude() + " , langitude = " + location.getLangitude() + " WHERE IdToken = \"" + idToken + "\"";
+                query = "UPDATE location SET latitude = " + location.getLatitude() + " , longitude = " + location.getLongitude() + " WHERE IdToken = \"" + idToken + "\"";
             } else {
-                query = "INSERT INTO location VALUE (" + idToken + ", " + location.getLongitude() + ", " + location.getLangitude() + ")";
+                query = "INSERT INTO location VALUE (\""+ idToken + "\", " + location.getLatitude() + ", " + location.getLongitude() + ")";
             }
 
             try {
@@ -118,13 +118,13 @@ public class DataBaseConnector {
                 statement.close();
             }
             catch (SQLException e) {
-                e.getSQLState();
+                System.out.println(e.getSQLState());
             }
         }
     }
 
     public List<UserInfo> getAllLocations() {
-        String query = "Select * from location join userinfo";
+        String query = "SELECT * FROM location INNER JOIN Userinfo ON userinfo.IdToken = location.IdToken";
         List<UserInfo> locations = new ArrayList<>();
 
         ResultSet result = sendQuery(query);
@@ -136,10 +136,10 @@ public class DataBaseConnector {
                     String firstName    = result.getString("FirstName");
                     String lastName     = result.getString("LastName");
                     String imagePath    = result.getString("ImagePath");
-                    double langitude    = result.getDouble("Langitude");
+                    double latitude     = result.getDouble("latitude");
                     double longitude    = result.getDouble("longitude");
 
-                    locations.add(new UserInfo(idToken, nickname, firstName, lastName, imagePath, longitude, langitude));
+                    locations.add(new UserInfo(idToken, nickname, firstName, lastName, imagePath, latitude, longitude));
                 }
                 result.close();
                 statement.close();
@@ -153,7 +153,7 @@ public class DataBaseConnector {
     public String startChat(String idToken, HashMap<String, Object> json) {
         String dateWithTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss"));
         String chatIdHash = generateChatHash(idToken, (String) json.get("toId"));
-        String query = "INSERT INTO chat Value(\"" + chatIdHash + "\", \"" + idToken + "\", \"" + json.get("toId") + "\", \"" + dateWithTime + "\")";
+        String query = "INSERT INTO chat VALUE(\"" + chatIdHash + "\", \"" + idToken + "\", \"" + json.get("toId") + "\", \"" + dateWithTime + "\")";
 
         try {
             sendQuery(query);
@@ -302,7 +302,7 @@ public class DataBaseConnector {
             resultSet.close();
         }
         catch (SQLException e) {
-            e.getSQLState();
+            System.out.println(e.getSQLState());
         }
         return returnValue;
     }

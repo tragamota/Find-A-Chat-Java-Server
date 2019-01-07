@@ -54,7 +54,6 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendMessage(String serializedMessage) {
-        System.out.println(serializedMessage);
         if(clientSocket.isOpen()) {
             clientSocket.send(serializedMessage);
         }
@@ -83,7 +82,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void processInComingMessage(Map<String, Object> json) {
-        System.out.println(json);
         String command = (String) json.get("command");
         switch(loginStatus) {
             case INDENTIFIED:
@@ -101,8 +99,8 @@ public class ClientHandler implements Runnable {
                         break;
                     case "chat":
                         String chatID = dbConnector.startChat(idToken,(HashMap) json);
-                        sendMessage(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toID")));
-                        listener.sendMessageTo(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toID")),(String) json.get("toID"));
+                        sendMessage(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toId")));
+                        listener.sendMessageTo(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toId")),(String) json.get("toId"));
                         break;
                     case "profileImage":
                         saveProfilePicture((String) json.get("image"));
@@ -126,6 +124,7 @@ public class ClientHandler implements Runnable {
                         clientSocket.close();
                         break;
                 }
+                break;
         }
     }
 
@@ -147,7 +146,7 @@ public class ClientHandler implements Runnable {
             public void run() {
                 sendMessage(MessageWrapper.wrapLocationRequest());
             }
-        }, 0, 120000);
+        }, 0, 30000);
     }
 
     private void cleanUp() {

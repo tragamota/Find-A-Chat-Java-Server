@@ -3,16 +3,16 @@ package Message;
 import com.owlike.genson.annotation.JsonCreator;
 
 public class Location {
-    private double langitude, longitude;
+    private double latitude, longitude;
 
     @JsonCreator
-    public Location(double langitude, double longitude) {
-        this.langitude = langitude;
+    public Location(double latitude, double longitude) {
+        this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public double getLangitude() {
-        return langitude;
+    public double getLatitude() {
+        return latitude;
     }
 
     public double getLongitude() {

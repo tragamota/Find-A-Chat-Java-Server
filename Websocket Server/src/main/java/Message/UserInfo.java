@@ -13,12 +13,12 @@ public class UserInfo {
     private String profileImage;
     private Location location;
 
-    public UserInfo(String idToken, String nickName, String firstName, String lastName, String imagePath, double longitude, double langitude) {
+    public UserInfo(String idToken, String nickName, String firstName, String lastName, String imagePath, double latitude, double longitude) {
         this.idToken = idToken;
         this.nickName = nickName;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.location = new Location(longitude, langitude);
+        this.location = new Location(latitude, longitude);
         this.profileImage = loadImage(imagePath);
     }
 
@@ -35,7 +35,6 @@ public class UserInfo {
             try {
                 byte[] imageInBytes = Files.readAllBytes(Paths.get(Paths.get("").toAbsolutePath() + "\\profileImage\\" + imagePath));
                 loadedImage = Base64.getEncoder().encodeToString(imageInBytes);
-                System.out.println(loadedImage);
             }
             catch (IOException e) {
                 System.out.println(e.getMessage());

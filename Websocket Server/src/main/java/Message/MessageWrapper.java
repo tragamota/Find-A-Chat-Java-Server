@@ -35,6 +35,7 @@ public class MessageWrapper {
                 put("list", info);
             }
         }};
+        System.out.println(jsonConverter.serialize(json));
         return jsonConverter.serialize(json);
     }
 
