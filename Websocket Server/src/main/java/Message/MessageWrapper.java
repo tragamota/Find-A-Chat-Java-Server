@@ -4,7 +4,9 @@ import com.owlike.genson.Genson;
 import com.owlike.genson.annotation.JsonConverter;
 
 import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,9 +80,17 @@ public class MessageWrapper {
     }
 
     public static String wrapNewMessage(Message message) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         Map<String, Object> json = new HashMap<String, Object>() {{
             put("command", "newMessage");
-            put("message", message);
+            put("message", new HashMap<String, Object>() {{
+                put("chatId", message.getChatId());
+                put("from", message.getFrom());
+                put("to", message.getTo());
+                put("content", message.getContent());
+                put("time", message.getTime().format(formatter));
+            }});
         }};
         return jsonConverter.serialize(json);
     }

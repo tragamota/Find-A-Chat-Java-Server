@@ -92,6 +92,7 @@ public class ClientHandler implements Runnable {
                         break;
                     case "message":
                         Message receivedMessage = MessageWrapper.deserializeChatMessage((HashMap) json.get("message"));
+                        sendMessage(MessageWrapper.wrapNewMessage(receivedMessage));
                         dbConnector.addMessageToChat(receivedMessage);
                         if(listener.sendMessageTo(MessageWrapper.wrapNewMessage(receivedMessage), receivedMessage.getTo())) {
                             dbConnector.setMessageAsRead(receivedMessage);
@@ -100,7 +101,7 @@ public class ClientHandler implements Runnable {
                     case "chat":
                         String chatID = dbConnector.startChat(idToken,(HashMap) json);
                         sendMessage(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toId")));
-                        listener.sendMessageTo(MessageWrapper.wrapNewChat(chatID, idToken, (String) json.get("toId")),(String) json.get("toId"));
+                        listener.sendMessageTo(MessageWrapper.wrapNewChat(chatID, (String) json.get("toId"), idToken),(String) json.get("toId"));
                         break;
                     case "profileImage":
                         saveProfilePicture((String) json.get("image"));

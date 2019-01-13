@@ -48,6 +48,7 @@ public class ServerConnection extends WebSocketServer {
                         return true;
                     }
                 }
+
                 return false;
             }
         };
