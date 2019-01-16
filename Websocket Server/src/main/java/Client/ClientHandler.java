@@ -147,7 +147,7 @@ public class ClientHandler implements Runnable {
             public void run() {
                 sendMessage(MessageWrapper.wrapLocationRequest());
             }
-        }, 0, 30000);
+        }, 0, 2500);
     }
 
     private void cleanUp() {
